@@ -37,8 +37,6 @@ self.onmessage = async (ev) => {
 
       const result = self.generatePreParams(timeout, curveType);
 
-      console.log("worker", "preparams result", result)
-
       sendGeneratedPreparamsResult(result);
 
       return
