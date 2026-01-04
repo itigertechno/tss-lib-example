@@ -19,7 +19,7 @@ export class TssWorker {
    *
    * @returns Кортеж с флагом, который показывает, успешно ли прошло соединение, а также кодом ошибки, если она произошал.
    */
-  init(
+  async init(
     messageHandler: (payload: any) => void,
     errorHandler: (description: string) => void
   ) {
@@ -50,8 +50,13 @@ export class TssWorker {
   
     // Отправляем команду инициализации.
     this.instance.postMessage({ type: "init" });
-  
-    return [true, WorkerError.NOTHING];
+
+    return await new Promise(resolve => {
+      const unsubscribe = this.subscribeToMessage("initDone", () => {
+        unsubscribe()
+        resolve([true, WorkerError.NOTHING])
+      })
+    }) as [boolean, WorkerError]
   }
 
   stop() {
@@ -71,7 +76,7 @@ export class TssWorker {
 
     const handler = (ev: MessageEvent) => {
       const data = ev.data
-      if (data?.type == type && data?.payload) {
+      if (data?.type == type) {
         callback(data.payload)
       }
     }

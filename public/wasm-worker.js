@@ -27,6 +27,10 @@ self.onmessage = async (ev) => {
 
       go.run(instance);
 
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      sendInitDone()
+
       return;
     }
 
@@ -68,7 +72,7 @@ self.onmessage = async (ev) => {
       const id = payload.fromId
       const isBroadcast = payload.isBroadcast
 
-     self.generateKeysUpdateBytes(bytes, id, isBroadcast)
+      self.generateKeysUpdateBytes(bytes, id, isBroadcast)
     }
 
     if (type == "signMessage") {
@@ -79,7 +83,7 @@ self.onmessage = async (ev) => {
       const saveDataJSON = payload.saveData
       const curveType = payload.curveType
       const timeout = payload.timeout
-      
+
       new Promise(() => {
         const result = self.signMessage(id, participantsJSON, messageBytes, saveDataJSON, curveType, timeout, sendSignMessageNewMessage, (result) => {
           sendSignMessageResult(result)
@@ -110,14 +114,20 @@ function sendError(message) {
   self.postMessage({ type: "error", payload: message });
 }
 
+function sendInitDone() {
+  self.postMessage({ type: "initDone", payload: "" })
+}
+
 function sendGeneratedPreparamsResult(result) {
   self.postMessage({ type: "generatedPreparamsResult", payload: result });
 }
 
 function sendGenerateKeysNewMessage(fromId, toIdList, bytes, isBroadcast) {
-  self.postMessage({type: "generateKeysNewMessage", payload: {
-    fromId, toIdList, bytes, isBroadcast
-  }})
+  self.postMessage({
+    type: "generateKeysNewMessage", payload: {
+      fromId, toIdList, bytes, isBroadcast
+    }
+  })
 }
 
 function sendGeneratedKeysResult(result) {
@@ -125,11 +135,13 @@ function sendGeneratedKeysResult(result) {
 }
 
 function sendSignMessageNewMessage(fromId, toIdList, bytes, isBroadcast) {
-  self.postMessage({type: "signMessageNewMessage", payload: {
-    fromId, toIdList, bytes, isBroadcast
-  }})
+  self.postMessage({
+    type: "signMessageNewMessage", payload: {
+      fromId, toIdList, bytes, isBroadcast
+    }
+  })
 }
 
 function sendSignMessageResult(result) {
-  self.postMessage({type: "signMessageResult", payload: result})
+  self.postMessage({ type: "signMessageResult", payload: result })
 }

@@ -170,13 +170,13 @@ export function TssContextProvider(props: ITssContextProviderProps) {
   );
 
   /** Инициализирует воркер и обрабатывает результаты инициализации. */
-  const handleInitWorker = useCallback(() => {
+  const handleInitWorker = useCallback(async () => {
     setState(TssState.INIT);
     setErrorDescription("");
 
     /** Возможно, пользователь снова вызывает инициализацию воркера, поэтому можно безопасно остановить воркер перед перезапуском. */
     globalWorker.stop()
-    const result = globalWorker.init(handleMessage, handleError);
+    const result = await globalWorker.init(handleMessage, handleError);
 
     if (result[0]) {
       setState(TssState.IDLE);

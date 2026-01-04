@@ -153,11 +153,6 @@ export default function TestTSS() {
       { id: "bob", moniker: "Bob", uniqueKey: "2" },
     ]
 
-    // Генерация ключей для первого пользователя (текущий браузер).
-    const [updater1, promise1] = tssContext.generateKeys("alice", participants, preParams1, (fromId, toIdList, bytes, isBroadcast) => {
-      updater2(fromId, bytes, isBroadcast)
-    }, 0, 720)
-
     // Костыль для генерации ключей для второго пользователя (симуляция другой машины).
     const bobWorker = new TssWorker()
     const bobMessageHandler = (payload: any) => {
@@ -165,10 +160,12 @@ export default function TestTSS() {
     const bobErrorHandler = (err: string) => {
       console.log("bob worker error", err)
     }
-    bobWorker.init(bobMessageHandler, bobErrorHandler)
+    await bobWorker.init(bobMessageHandler, bobErrorHandler)
 
-    // Дадим время на инициализацию воркера.
-    await new Promise(r => setTimeout(r, 1000))
+    // Генерация ключей для первого пользователя (текущий браузер).
+    const [updater1, promise1] = tssContext.generateKeys("alice", participants, preParams1, (fromId, toIdList, bytes, isBroadcast) => {
+      updater2(fromId, bytes, isBroadcast)
+    }, 0, 720)
 
     // Генерация ключей для второго пользователя (другая машина).
     const [updater2, promise2] = tssContext.generateKeys("bob", participants, preParams2, (fromId, toIdList, bytes, isBroadcast) => {
@@ -233,12 +230,6 @@ export default function TestTSS() {
       0x54, 0x53, 0x53           // "TSS"
     ])
     
-
-    // Подпись сообщения для текущего пользователя
-    const [updater1, promise1] = tssContext.signMessage("alice", participants, message, keys1, (fromId, toIdList, bytes, isBroadcast) => {
-      updater2(fromId, bytes, isBroadcast)
-    }, 0, 720)
-
     // Костыль для подписи сообщения для второго пользователя (симуляция другой машины).
     const bobWorker = new TssWorker()
     const bobMessageHandler = (payload: any) => {
@@ -246,10 +237,13 @@ export default function TestTSS() {
     const bobErrorHandler = (err: string) => {
       console.log("bob worker error", err)
     }
-    bobWorker.init(bobMessageHandler, bobErrorHandler)
+    await bobWorker.init(bobMessageHandler, bobErrorHandler)
 
-    // Дадим время на инициализацию воркера.
-    await new Promise(r => setTimeout(r, 1000))
+    // Подпись сообщения для текущего пользователя
+    const [updater1, promise1] = tssContext.signMessage("alice", participants, message, keys1, (fromId, toIdList, bytes, isBroadcast) => {
+      updater2(fromId, bytes, isBroadcast)
+    }, 0, 720)
+
     // Подпись сообщения для другого пользователя (эмуляция другой машины)
     const [updater2, promise2] = tssContext.signMessage("bob", participants, message, keys2, (fromId, toIdList, bytes, isBroadcast) => {
       updater1(fromId, bytes, isBroadcast)
