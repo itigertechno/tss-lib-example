@@ -16,3 +16,8 @@ Golang код wasm оболочки находится в `vendor/go`. \
  - `docker build -t tss-next .`
  - `docker run -p 3000:3000 --name tss-next --rm tss-next`
  - [http://localhost:3000](http://localhost:3000)
+
+Дев режим:
+ - `docker build -t tss-next-dev -f Dockerfile.dev .`
+ - `docker run -p 3000:3000 --name tss-next-dev --rm tss-next-dev`
+ - [http://localhost:3000](http://localhost:3000)

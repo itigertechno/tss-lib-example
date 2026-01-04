@@ -67,7 +67,7 @@ func generatePreparams(this js.Value, args []js.Value) (result any) {
 	console.Call("log", "start generate preparams")
 	preParams, err := keygen.GeneratePreParams(timeout)
 	took := time.Since(start)
-	console.Call("log", "end generate preparams, took", took.String(), "error", err)
+	console.Call("log", "end generate preparams, took", took.String())
 
 	if err != nil {
 		console.Call("log", "generate preparams err", err.Error())
