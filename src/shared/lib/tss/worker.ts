@@ -22,7 +22,7 @@ export class TssWorker {
   async init(
     messageHandler: (payload: any) => void,
     errorHandler: (description: string) => void
-  ) {
+  ): Promise<[boolean, WorkerError]> {
     this.instance = new Worker("/wasm-worker.js");
 
     if (! this.instance) {
